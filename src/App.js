@@ -6,6 +6,7 @@ const { Option } = Select;
 
 function App() {
   const [form] = Form.useForm();
+  const [list,setList] = useState([]);
   let wrapperStyle = {
     paddingLeft:"4rem",
     paddingRight:"4rem",
@@ -23,19 +24,21 @@ function App() {
   let resultDivStyle = {
     marginTop: "2rem"
   }
-  const [list,setList] = useState([]);
   const onFinish = (values) => {
     setList([...list,...[{...values,...{id: Math.floor((Math.random() * 100) + 1), checked:false}}]]);
     form.resetFields();
   };
   const checkAction = (e,data) => {
-    // console.log("---------",ref,data)
-    if(e.target.checked) {
-      list.map(i=> i.id===data.id ? i.checked = true: i.checked = false );
-      console.log("------------",list)
-    }
+      let buff = list.map(i=>{ if(i.id===data.id) {
+        i.checked = e.target.checked;
+        return i;
+      } else {
+        return i;
+      }});
+      setList(buff)
+      
   }
-  
+
   const renderList = () => {
     let buff = [];
     for(let item of list) {
@@ -44,9 +47,8 @@ function App() {
           <Card style={cardStyle}>
             <Checkbox style={inputStyle} onChange={(e)=>checkAction(e, item)}>
               <span style={item.checked ?  {"text-decoration": "line-through"}: null}>
-                {item.taskName} {item.checked? "true" : "false"}
+                {item.taskName}
               </span>
-              
             </Checkbox>
           </Card>
         </Col>
