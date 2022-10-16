@@ -1,5 +1,5 @@
 import './App.css';
-import { Card,Row,Col,Button, Select, Form, Input,Checkbox } from 'antd';
+import { Card,Row,Col,Button, Select, Form, Input,Checkbox} from 'antd';
 import 'antd/dist/antd.css';
 import { useState } from 'react';
 const { Option } = Select;
@@ -24,6 +24,11 @@ function App() {
   let resultDivStyle = {
     marginTop: "2rem"
   }
+  let color = {
+    1: "yellow",
+    2: "green",
+    3: "red",
+  }
   const onFinish = (values) => {
     setList([...list,...[{...values,...{id: Math.floor((Math.random() * 100) + 1), checked:false}}]]);
     form.resetFields();
@@ -36,7 +41,6 @@ function App() {
         return i;
       }});
       setList(buff)
-      
   }
 
   const renderList = () => {
@@ -45,17 +49,16 @@ function App() {
       buff.push(
         <Col span={6} className="gutter-row">
           <Card style={cardStyle}>
-            <Checkbox style={inputStyle} onChange={(e)=>checkAction(e, item)}>
-              <span style={item.checked ?  {"text-decoration": "line-through"}: null}>
-                {item.taskName}
-              </span>
-            </Checkbox>
+              <Checkbox style={inputStyle} onChange={(e)=>checkAction(e, item)}>
+                <p>
+                    <span style={{width:"10px",  height:"100%", backgroundColor: color[item.color]}}>&nbsp;</span>&nbsp;&nbsp;<span style={item.checked ?  {"text-decoration": "line-through", }: null}>{item.taskName}</span>
+                </p>
+              </Checkbox>
           </Card>
         </Col>
       )
     } 
     return buff;
-
   };
 
   return (
