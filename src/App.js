@@ -5,22 +5,49 @@ import { useState } from 'react';
 const { Option } = Select;
 
 function App() {
-  const [list,setList] = useState([])
+  const [form] = Form.useForm();
+  let wrapperStyle = {
+    paddingLeft:"4rem",
+    paddingRight:"4rem",
+    paddingTop:"2rem",
+  }
+  let cardStyle = {
+    boxShadow: "0 0 10px #f6f3f2",
+    borderRadius:"10px"
+  }
+  let inputStyle = {
+    float: "left",
+    width:"100%",
+    borderRadius:"10px"
+  }
+  let resultDivStyle = {
+    marginTop: "2rem"
+  }
+  const [list,setList] = useState([]);
   const onFinish = (values) => {
-    setList([...list,...[values]])
+    setList([...list,...[{...values,...{id: Math.floor((Math.random() * 100) + 1), checked:false}}]]);
+    form.resetFields();
   };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
+  const checkAction = (e,data) => {
+    // console.log("---------",ref,data)
+    if(e.target.checked) {
+      list.map(i=> i.id===data.id ? i.checked = true: i.checked = false );
+      console.log("------------",list)
+    }
+  }
+  
   const renderList = () => {
-    console.log("---------",list)
-    let buff = []
+    let buff = [];
     for(let item of list) {
       buff.push(
-        <Col span={6}>
-          <Card>
-            <Checkbox >{item.taskName}</Checkbox>
+        <Col span={6} className="gutter-row">
+          <Card style={cardStyle}>
+            <Checkbox style={inputStyle} onChange={(e)=>checkAction(e, item)}>
+              <span style={item.checked ?  {"text-decoration": "line-through"}: null}>
+                {item.taskName} {item.checked? "true" : "false"}
+              </span>
+              
+            </Checkbox>
           </Card>
         </Col>
       )
@@ -30,45 +57,44 @@ function App() {
   };
 
   return (
-  <div className="App">
+  <div className="App" style={wrapperStyle}>
     <h1 style={{textAlign: "left"}}>Task Details</h1> 
-    <Card>
-      <Form name="basic" layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }} onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
-        <Row>
-          <Col span={12}>
-          <Form.Item label="Task-To-Do" name="taskName" rules={[{ required: true, message: 'Add a new Task!' }]}>
-            <Input />
-          </Form.Item>
+    <Card style={cardStyle}>
+      <Form form={form} name="basic" layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}
+        initialValues={{ remember: true }} onFinish={onFinish} autoComplete="off">
+        <Row gutter={{ xs: 2, sm: 4, md: 6, lg: 8 }}>
+          <Col span={10} className="gutter-row">
+            <Form.Item style={inputStyle} label="Task-To-Do" name="taskName" rules={[{ required: true, message: 'Add a new Task!' }]}>
+              <Input size="large" placeholder="Add a task."/>
+            </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Select Task Category" name="color" rules={[{ required: true, message: 'Select a color!' }]}>
-              <Select>
+          <Col span={10} className="gutter-row">
+            <Form.Item style={inputStyle} label="Select Task Category" name="color" rules={[{ required: true, message: 'Select a color!' }]}>
+              <Select size="large" placeholder="Select a color.">
                 <Option value="1">Yellow</Option>
                 <Option value="2">green</Option>
                 <Option value="3">Red</Option>
               </Select>
             </Form.Item>
           </Col>
-          <Col span={12}>
-          <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
+          <Col span={4} className="gutter-row"></Col>
+          <Col span={6} >
+            <Form.Item style={inputStyle}>
+              <Button type="primary" style={{width:"100%", height: "100%"}} htmlType="submit">
+                Submit Task
+              </Button>
+            </Form.Item>
           </Col>
         </Row>
       </Form>
     </Card>
-    <h1 style={{textAlign: "left"}}>Your tasks</h1> 
-    <Row>
-    {renderList()}
-    </Row>
+    <div style={resultDivStyle}>
+      <h1 style={{textAlign: "left"}}>Your tasks</h1> 
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+        {list.length ? renderList() : null}
+      </Row>
+    </div>
+
       
   </div>
   );
